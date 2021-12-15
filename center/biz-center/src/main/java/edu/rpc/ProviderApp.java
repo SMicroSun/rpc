@@ -172,7 +172,7 @@ public class ProviderApp {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            // closeOutputStream(os);
+            closeOutputStream(os);
             closeInputStream(fis);
         }
 

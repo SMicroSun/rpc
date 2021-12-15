@@ -164,10 +164,25 @@ public class ConsumerApp<T> {
 
             int len = 0;
             byte[] buffer = new byte[1024];
-            do {
-                len = is.read(buffer);
+
+            /**
+             * 如果Provider的输出流未关闭，则必须使用此种方式is.available()来读取流内容
+             *
+             */
+            // do {
+            //     len = is.read(buffer);
+            //     fos.write(buffer, 0, len);
+            // } while (is.available() != 0);
+
+            /**
+             * 使用is.read(buffer)方式来读取流内容的话，必须将Provider的输出流关闭
+             * 否则会报错
+             * java.net.SocketException: Connection reset
+             */
+            while ((len = is.read(buffer)) != -1) {
                 fos.write(buffer, 0, len);
-            } while (is.available() != 0);
+            }
+
 
             fos.flush();
         } catch (IOException e) {
@@ -472,7 +487,7 @@ public class ConsumerApp<T> {
      */
     public void closeSocket() {
         System.out.println("——————————关闭消费者的Socket——————————");
-        if(serverSocket != null) {
+        if (serverSocket != null) {
             try {
                 serverSocket.close();
             } catch (IOException e) {
